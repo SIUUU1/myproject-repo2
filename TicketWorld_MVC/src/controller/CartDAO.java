@@ -108,7 +108,7 @@ public class CartDAO {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, customer_id);
 			int value = pstmt.executeUpdate();
-			if (value == 1) {
+			if (value != 0) {
 				System.out.println(customer_id + " 장바구니 비우기 성공");
 			} else {
 				System.out.println(customer_id + " 장바구니 비우기 실패");

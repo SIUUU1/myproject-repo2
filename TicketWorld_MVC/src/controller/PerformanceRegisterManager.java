@@ -27,10 +27,6 @@ public class PerformanceRegisterManager {
 
 	// 공연정보 저장기능구현
 	public void performanceRegister() {
-		// 공연정보리스트
-		System.out.println("공연정보리스트");
-		pdao.getPerformanceTotalList();
-
 		System.out.println("공연정보입력");
 		System.out.print("공연명 : ");
 		String p_name = sc.nextLine();
@@ -53,14 +49,11 @@ public class PerformanceRegisterManager {
 				p_ticket_price);
 
 		pdao.setPerformanceRegister(pvo);
+		performanceList();
 	}
 
 	// 공연정보 수정기능구현
 	public void performanceUpdate() {
-		// 공연정보리스트
-		System.out.println("공연정보리스트");
-		pdao.getPerformanceTotalList();
-
 		System.out.print("수정할 공연ID>>");
 		int p_id = sc.nextInt();
 		sc.nextLine();
@@ -88,30 +81,29 @@ public class PerformanceRegisterManager {
 				p_sold_seats, p_ticket_price);
 
 		pdao.setPerformanceUpdate(pvo);
-		// 좌석 수정하기
+		performanceList();
 	}
 
 	// 공연정보 삭제기능구현
 	public void performanceDelete() {
-		// 공연정보리스트
-		System.out.println("공연정보리스트");
-		pdao.getPerformanceTotalList();
-
 		System.out.print("삭제할 공연ID>>");
 		int p_id = sc.nextInt();
 		sc.nextLine();
 
 		pdao.setPerformanceDelete(p_id);
+		performanceList();
 	}
 
 	// 예매 후 공연 정보 수정기능구현
 	public void performanceUpdateAfterTicketing(int numId) {
 		PerformanceVO pvo = TicketWorldMain.performanceInfoList.get(numId);
 		pdao.setPerformanceUpdateAfterTicketing(pvo);
+		performanceList();
 	}
 
 	// 공연 이름 검색기능구현
-	public void selectPerformanceName(ArrayList<PerformanceVO> performanceInfoList) {
+	public boolean selectPerformanceName(ArrayList<PerformanceVO> performanceInfoList) {
+		boolean findFlag = false;
 		ArrayList<PerformanceVO> perfomanceList = new ArrayList<>();
 		System.out.print("검색할 공연명을 입력하세요. ");
 		String p_name = sc.nextLine();
@@ -121,13 +113,16 @@ public class PerformanceRegisterManager {
 
 		if (!perfomanceList.isEmpty()) {
 			printPerformanceList(perfomanceList);
+			findFlag = true;
 		} else {
 			System.out.println("찾으시는 정보가 없습니다.");
 		}
+		return findFlag;
 	}
 
 	// 공연 장르 검색기능구현
-	public void selectPerformanceGenre(ArrayList<PerformanceVO> performanceInfoList, String p_genre) {
+	public boolean selectPerformanceGenre(ArrayList<PerformanceVO> performanceInfoList, String p_genre) {
+		boolean findFlag = false;
 		ArrayList<PerformanceVO> perfomanceList = new ArrayList<>();
 		// 공연 장르 검색
 		if (p_genre == null) {
@@ -143,8 +138,10 @@ public class PerformanceRegisterManager {
 		// 검색한 공연 출력
 		if (!perfomanceList.isEmpty()) {
 			printPerformanceList(perfomanceList);
+			findFlag = true;
 		} else {
 			System.out.println("찾으시는 정보가 없습니다.");
 		}
+		return findFlag;
 	}
 }

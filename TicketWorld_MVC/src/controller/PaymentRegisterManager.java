@@ -16,7 +16,7 @@ public class PaymentRegisterManager {
 	static PaymentDAO paydao = new PaymentDAO();
 
 	// 결제기능구현
-	public void cartPayment() {
+	public void cartPayment(ArrayList<CartVO> cartList) {
 		CustomerVO cvo = TicketWorldMain.customer;
 		PaymentVO payvo = new PaymentVO();
 		System.out.print("장바구니에 있는 모든 항목을 결제하시겠습니까? Y | N ");
@@ -45,7 +45,7 @@ public class PaymentRegisterManager {
 				int totalAmount = cartManager.calcPrice();
 				int totalPayment = calcTotalPrice(totalAmount);
 				// 결제 정보 입력하기
-				payvo = paymentRegister(cvo, name, phone, address, cartManager.cartList(), totalPayment);
+				payvo = paymentRegister(cvo, name, phone, address, cartList, totalPayment);
 			}
 			// 결제 내역 출력하기
 			paydao.getPayment(payvo);
@@ -124,7 +124,6 @@ public class PaymentRegisterManager {
 			cvo.setCustomer_points(
 					cvo.getCustomer_points() - usingPoints + (int) (price * cvo.getCustomer_point_ratio()));
 			cvo.setCustomer_accumulated_payment(cvo.getCustomer_accumulated_payment() + price);
-			cvo.setCustomer_points(usingPoints);
 			System.out.println("적립금 " + (int) (price * cvo.getCustomer_point_ratio()) + "원 적립되어, 총 적립금은 "
 					+ cvo.getCustomer_points() + "원 입니다.");
 		}

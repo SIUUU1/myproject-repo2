@@ -25,6 +25,7 @@ public class AdminRegisterManager {
 			String pw = sc.nextLine();
 			if (id.equals(adminId) && pw.equals(adminPw)) {
 				adminFlag = true;
+				System.out.println("관리자 모드에 접속하셨습니다.");
 			} else {
 				System.out.println("관리자 로그인 실패하셨습니다.");
 			}

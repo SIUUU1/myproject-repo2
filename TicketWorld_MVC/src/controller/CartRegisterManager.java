@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import main.TicketWorldMain;
@@ -23,7 +24,7 @@ public class CartRegisterManager {
 	// 장바구니 항목 지우기기능구현
 	public void cartDeleteItem() {
 		cartList();
-		// 삭제할 공연ID가 2개 이상일 경우 생각하기
+		// 삭제할 공연ID가 2개 이상일 경우
 		boolean flag = false;
 		System.out.print("삭제할 공연ID를 입력하세요. ");
 		int p_id = Integer.parseInt(sc.nextLine());
@@ -63,7 +64,6 @@ public class CartRegisterManager {
 		TicketWorldMain.performanceInfoList.get(p_numId)
 				.setPerformance_sold_seats(TicketWorldMain.performanceInfoList.get(p_numId).getPerformance_sold_seats()
 						- cartList.get(c_numId).getTotal_reservation_seats());
-
 	}
 
 	// 좌석선택해제기능구현
@@ -113,7 +113,6 @@ public class CartRegisterManager {
 	// 공연예매기능구현
 	public void ticketing(ArrayList<PerformanceVO> performanceInfoList) {
 		boolean exitFlag = false;
-
 		while (!exitFlag) {
 			System.out.print("예매할 공연 ID를 입력하세요(뒤로가기: -1)");
 			int p_id = Integer.parseInt(sc.nextLine());
@@ -204,7 +203,7 @@ public class CartRegisterManager {
 			}
 			// -----------------------------------------------------------------
 			// 좌석 중복 금지
-			if (seat[x][y] == 1 && seat[x][y] == 9) {
+			if (seat[x][y] == 1 || seat[x][y] == 9) {
 				System.out.println("선택할 수 없는 좌석입니다.");
 				i--;
 			} else {
@@ -276,17 +275,26 @@ public class CartRegisterManager {
 		int[][] seat = new int[rowNum][COLUMN_NUM];
 
 		String[] seatArr = TicketWorldMain.performanceInfoList.get(numId).getPerformance_seatsInfo().split("");
-		for (String data : seatArr) {
+
+		if (remain != 0) {
+			// 남은 좌석 있을 때
 			for (int i = 0; i < seat.length; i++) {
-				for (int j = 0; j < seat[i].length; j++) {
-					seat[i][j] = Integer.parseInt(data);
+				if (i == rowNum - 1) {
+					for (int j = 0; j < COLUMN_NUM - remain; j++) {
+						seat[rowNum - 1][COLUMN_NUM - 1 - j] = 9;
+					}
+				} else {
+					for (int j = 0; j < seat[i].length; j++) {
+						seat[i][j] = Integer.parseInt(seatArr[(i * COLUMN_NUM) + j]);
+					}
 				}
 			}
-		}
-		// 남은좌석
-		if (remain != 0) {
-			for (int i = 0; i < COLUMN_NUM - remain; i++) {
-				seat[rowNum - 1][COLUMN_NUM - 1 - i] = 9;
+		} else {
+			// 남은 좌석 없을 때
+			for (int i = 0; i < seat.length; i++) {
+				for (int j = 0; j < seat[i].length; j++) {
+					seat[i][j] = Integer.parseInt(seatArr[(i * COLUMN_NUM) + j]);
+				}
 			}
 		}
 		return seat;
@@ -300,5 +308,4 @@ public class CartRegisterManager {
 		}
 		return totalAmount;
 	}
-
 }

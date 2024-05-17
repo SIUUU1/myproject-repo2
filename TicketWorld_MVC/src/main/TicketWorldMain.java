@@ -8,6 +8,7 @@ import controller.CartRegisterManager;
 import controller.CustomerRegisterManager;
 import controller.PaymentRegisterManager;
 import controller.PerformanceRegisterManager;
+import model.CartVO;
 import model.CustomerVO;
 import model.PerformanceVO;
 import view.ADMIN_CHOICE;
@@ -34,7 +35,6 @@ public class TicketWorldMain {
 	public static PaymentRegisterManager paymentManager = new PaymentRegisterManager();
 	public static CustomerVO customer = null; // 현재 고객
 	static int cusNumId = -1; // 현재 고객의 고객리스트 index
-	//public static String customer_id = null; // 현재 고객 아이디
 
 	public static void main(String[] args) {
 		boolean flag = false; // 로그인 페이지 무한 반복
@@ -89,11 +89,14 @@ public class TicketWorldMain {
 
 		// Customer Main
 		if (loginFlag) {
+			System.out.println();
 			System.out.println(customer.getCustomer_name() + "님 환영합니다.");
 			while (!mainExitFlag) {
+				MenuViewer.mainMenuView();
+
 				// 공연정보로딩
 				perfManager.performanceList();
-				MenuViewer.mainMenuView();
+
 				String menuSelect = sc.nextLine().replaceAll("[^1-5]", "0");
 				if (menuSelect.length() == 0) {
 					System.out.println("다시 입력해주세요.");
@@ -118,7 +121,7 @@ public class TicketWorldMain {
 						case CUSTOMER_CHOICE.PAYMENT:
 							// 결제 내역 출력
 							paymentManager.printPaymentList(customer.getCustomer_id());
-							//menuPaymentBill();
+							// menuPaymentBill();
 							break;
 						case CUSTOMER_CHOICE.LOGOUT:
 							System.out.println("로그아웃");
@@ -162,114 +165,11 @@ public class TicketWorldMain {
 		}
 	}// end of main
 
-	// 공연 검색 메뉴
-	public static void selectPerformanceMenu() {
-		boolean exitFlag = false;
-		while (!exitFlag) {
-			MenuViewer.selectPerformanceMenuView();
-			String menuSelect = sc.nextLine().replaceAll("[^1-4]", "0");
-			if (menuSelect.length() == 0) {
-				System.out.println("다시 입력해주세요.");
-			} else {
-				int menuSelectNum = Integer.parseInt(menuSelect);
-				if (menuSelectNum < 1 || menuSelectNum > 4) {
-					System.out.println("1부터 4까지의 숫자를 입력해주세요");
-				} else {
-					
-					//공연정보로딩
-					perfManager.performanceList();
-					
-					switch (menuSelectNum) {
-					case SELECT_PERFORMANCE_CHOICE.All:
-						//공연정보출력
-						perfManager.printPerformanceList(performanceInfoList);
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_PERFORMANCE_CHOICE.NAME:
-						//공연이름검색
-						perfManager.selectPerformanceName(performanceInfoList);
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_PERFORMANCE_CHOICE.GENRE:
-						 selectGenreMenu();
-						break;
-					case SELECT_PERFORMANCE_CHOICE.BACK:
-						// 뒤로가기
-						exitFlag = true;
-						break;
-					}
-				}
-			}
-		}//end of while
-	}
-
-	// 공연 장르 검색
-	public static void selectGenreMenu() {
-		boolean exitFlag = false;
-		while (!exitFlag) {
-			MenuViewer.searchGenreMenuView();
-			String menuSelect = sc.nextLine().replaceAll("[^1-7]", "0");
-			if (menuSelect.length() == 0) {
-				System.out.println("다시 입력해주세요.");
-			} else {
-				int menuSelectNum = Integer.parseInt(menuSelect);
-				if (menuSelectNum < 1 || menuSelectNum > 7) {
-					System.out.println("1부터 7까지의 숫자를 입력해주세요");
-				} else {
-					switch (menuSelectNum) {
-					case SELECT_GENRE_CHOICE.MUSICAL:
-						//공연장르검색
-						perfManager.selectPerformanceGenre(performanceInfoList, "뮤지컬");
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_GENRE_CHOICE.CONCERT:
-						//공연장르검색
-						perfManager.selectPerformanceGenre(performanceInfoList, "콘서트");
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_GENRE_CHOICE.PLAY:
-						//공연장르검색
-						perfManager.selectPerformanceGenre(performanceInfoList, "연극");
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_GENRE_CHOICE.CLASSIC:
-						//공연장르검색
-						perfManager.selectPerformanceGenre(performanceInfoList, "클래식");
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_GENRE_CHOICE.DANCE:
-						//공연장르검색
-						perfManager.selectPerformanceGenre(performanceInfoList, "무용");
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_GENRE_CHOICE.EXTRA:
-						//공연장르검색
-						perfManager.selectPerformanceGenre(performanceInfoList, null);
-						//공연예매
-						cartManager.ticketing(performanceInfoList);
-						break;
-					case SELECT_GENRE_CHOICE.BACK:
-						// 뒤로가기
-						exitFlag = true;
-						break;
-					}
-				}
-			}
-		}//end of while
-	}
-
 	// 장바구니 메뉴
 	public static void cartMenu() {
 		// 장바구니가 비어있으면 실행안됨
 		// 장바구니 출력
-		cartManager.cartList();
+		ArrayList<CartVO> cartList = cartManager.cartList();
 		boolean exitFlag = false;
 		while (!exitFlag) {
 			MenuViewer.cartMenuView();
@@ -283,13 +183,16 @@ public class TicketWorldMain {
 				} else {
 					switch (menuSelectNum) {
 					case CART_CHOICE.PAYMENT:
-						paymentManager.cartPayment();
+						paymentManager.cartPayment(cartList);
+						exitFlag = true;
 						break;
 					case CART_CHOICE.CARTREMOVEITEM:
 						cartManager.cartDeleteItem();
+						exitFlag = true;
 						break;
 					case CART_CHOICE.CARTCLEAR:
 						cartManager.cartDelete();
+						exitFlag = true;
 						break;
 					case CART_CHOICE.BACK:
 						// 뒤로가기
@@ -341,11 +244,140 @@ public class TicketWorldMain {
 		} // end of while
 	}
 
+	// 공연 검색 메뉴
+	public static void selectPerformanceMenu() {
+		boolean exitFlag = false;
+		boolean findFlag = false;
+
+		// 공연정보출력
+		perfManager.printPerformanceList(performanceInfoList);
+
+		while (!exitFlag) {
+			MenuViewer.selectPerformanceMenuView();
+
+			// 공연정보로딩
+			perfManager.performanceList();
+
+			String menuSelect = sc.nextLine().replaceAll("[^1-4]", "0");
+			if (menuSelect.length() == 0) {
+				System.out.println("다시 입력해주세요.");
+			} else {
+				int menuSelectNum = Integer.parseInt(menuSelect);
+				if (menuSelectNum < 1 || menuSelectNum > 4) {
+					System.out.println("1부터 4까지의 숫자를 입력해주세요");
+				} else {
+
+					switch (menuSelectNum) {
+					case SELECT_PERFORMANCE_CHOICE.INSTANT:
+						// 공연예매
+						cartManager.ticketing(performanceInfoList);
+						exitFlag = true;
+						break;
+					case SELECT_PERFORMANCE_CHOICE.NAME:
+						// 공연이름검색
+						findFlag = perfManager.selectPerformanceName(performanceInfoList);
+						if (findFlag) {
+							// 공연예매
+							cartManager.ticketing(performanceInfoList);
+						}
+						exitFlag = true;
+						break;
+					case SELECT_PERFORMANCE_CHOICE.GENRE:
+						selectGenreMenu();
+						exitFlag = true;
+						break;
+					case SELECT_PERFORMANCE_CHOICE.BACK:
+						// 뒤로가기
+						exitFlag = true;
+						break;
+					}
+				}
+			}
+		} // end of while
+	}
+
+	// 공연 장르 검색
+	public static void selectGenreMenu() {
+		boolean exitFlag = false;
+		boolean findFlag = false;
+		while (!exitFlag) {
+			MenuViewer.searchGenreMenuView();
+			String menuSelect = sc.nextLine().replaceAll("[^1-7]", "0");
+			if (menuSelect.length() == 0) {
+				System.out.println("다시 입력해주세요.");
+			} else {
+				int menuSelectNum = Integer.parseInt(menuSelect);
+				if (menuSelectNum < 1 || menuSelectNum > 7) {
+					System.out.println("1부터 7까지의 숫자를 입력해주세요");
+				} else {
+					switch (menuSelectNum) {
+					case SELECT_GENRE_CHOICE.MUSICAL:
+						// 공연장르검색
+						findFlag = perfManager.selectPerformanceGenre(performanceInfoList, "뮤지컬");
+						if (findFlag) {
+							// 공연예매
+							cartManager.ticketing(performanceInfoList);
+						}
+						break;
+					case SELECT_GENRE_CHOICE.CONCERT:
+						// 공연장르검색
+						findFlag = perfManager.selectPerformanceGenre(performanceInfoList, "콘서트");
+						if (findFlag) {
+							// 공연예매
+							cartManager.ticketing(performanceInfoList);
+						}
+						break;
+					case SELECT_GENRE_CHOICE.PLAY:
+						// 공연장르검색
+						findFlag = perfManager.selectPerformanceGenre(performanceInfoList, "연극");
+						if (findFlag) {
+							// 공연예매
+							cartManager.ticketing(performanceInfoList);
+						}
+						break;
+					case SELECT_GENRE_CHOICE.CLASSIC:
+						// 공연장르검색
+						findFlag = perfManager.selectPerformanceGenre(performanceInfoList, "클래식");
+						if (findFlag) {
+							// 공연예매
+							cartManager.ticketing(performanceInfoList);
+						}
+						break;
+					case SELECT_GENRE_CHOICE.DANCE:
+						// 공연장르검색
+						findFlag = perfManager.selectPerformanceGenre(performanceInfoList, "무용");
+						if (findFlag) {
+							// 공연예매
+							cartManager.ticketing(performanceInfoList);
+						}
+						break;
+					case SELECT_GENRE_CHOICE.EXTRA:
+						// 공연장르검색
+						findFlag = perfManager.selectPerformanceGenre(performanceInfoList, null);
+						if (findFlag) {
+							// 공연예매
+							cartManager.ticketing(performanceInfoList);
+						}
+						break;
+					case SELECT_GENRE_CHOICE.BACK:
+						// 뒤로가기
+						exitFlag = true;
+						break;
+					}
+				}
+			}
+		} // end of while
+	}
+
 	// 관리자 공연관리 메뉴
 	public static void managePerformanceMenu() {
 		boolean exitFlag = false;
 		while (!exitFlag) {
 			MenuViewer.managePerformanceMenuView();
+
+			// 공연정보로딩
+			perfManager.performanceList();
+
 			String menuSelect = sc.nextLine().replaceAll("[^1-5]", "0");
 			if (menuSelect.length() == 0) {
 				System.out.println("다시 입력해주세요.");
@@ -356,15 +388,18 @@ public class TicketWorldMain {
 				} else {
 					switch (menuSelectNum) {
 					case MANAGE_PERFORMANCE_CHOICE.LIST:
-						perfManager.performanceList();
+						perfManager.printPerformanceList(performanceInfoList);
 						break;
 					case MANAGE_PERFORMANCE_CHOICE.INSERT:
+						perfManager.printPerformanceList(performanceInfoList);
 						perfManager.performanceRegister();
 						break;
 					case MANAGE_PERFORMANCE_CHOICE.UPDATE:
+						perfManager.printPerformanceList(performanceInfoList);
 						perfManager.performanceUpdate();
 						break;
 					case MANAGE_PERFORMANCE_CHOICE.DELETE:
+						perfManager.printPerformanceList(performanceInfoList);
 						perfManager.performanceDelete();
 						break;
 					case MANAGE_PERFORMANCE_CHOICE.BACK:

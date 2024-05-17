@@ -78,7 +78,7 @@ public class CustomerRegisterManager {
 	// 로그인한 회원정보 출력 기능구현
 	public void customerInfo(CustomerVO customer) {
 		System.out.println("================================================================");
-		System.out.println("\t\t\t  " + customer.getCustomer_name() + " 님의 정보");
+		System.out.println("\t\t\t  " + customer.getCustomer_name() + "님의 정보");
 		System.out.println("================================================================");
 		System.out.println(" 등급 | 누적결제금액 | 포인트 ");
 		System.out.println("----------------------------------------------------------------");
@@ -147,8 +147,9 @@ public class CustomerRegisterManager {
 		int customer_points = cvo.getCustomer_points();
 		double customer_point_ratio = cvo.getCustomer_point_ratio();
 		double customer_sale_ratio = cvo.getCustomer_sale_ratio();
-		CustomerVO cvo1 = new CustomerVO(customer_id, customer_pw, customer_name, customer_phone, customer_email,
-				customer_address, customer_age);
+		CustomerVO cvo1 = new CustomerVO(customer_id, customer_grade, customer_pw, customer_name, customer_phone,
+				customer_email, customer_address, customer_age, customer_accumulated_payment, customer_points,
+				customer_point_ratio, customer_sale_ratio);
 
 		cdao.setCustomerUpdate(cvo1);
 	}
